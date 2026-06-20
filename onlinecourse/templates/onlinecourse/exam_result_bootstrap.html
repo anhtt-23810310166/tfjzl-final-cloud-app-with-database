@@ -2,53 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {% load static %}
+    <title>Exam Result</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-
- <nav class="navbar navbar-light bg-light">
-    <div class="container-fluid">
-        <div class="navbar-header">
-              <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
+            <span class="navbar-text font-weight-bold">{{ user.username }}</span>
         </div>
-        <ul class="nav navbar-nav navbar-right">
-            {% if user.is_authenticated %}
-            <li>
-                <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
-                <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
-            </li>
-            {% else %}
-            <li>
-                <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Username" name="username" >
-                        <input type="password" class="form-control" placeholder="Username" name="psw" >
-                        <button class="btn btn-primary" type="submit">Login</button>
-                        <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="alert alert-success text-center shadow-sm py-4">
+            <h1 class="display-4 font-weight-bold text-success">Congratulations!</h1>
+            <p class="lead font-weight-bold text-secondary mt-2">You have successfully passed the exam for {{ course.name }}.</p>
+            <h3 class="mt-3">Your Score: <span class="badge badge-success px-3 py-2">100%</span></h3>
+        </div>
+
+        <div class="card my-4 shadow-sm">
+            <div class="card-header bg-dark text-white font-weight-bold">
+                <h3>Exam Results</h3>
+            </div>
+            <div class="card-body">
+                {% for question in course.question_set.all %}
+                <div class="card mb-3 border-success">
+                    <div class="card-header bg-light font-weight-bold text-success">
+                        Question {{ forloop.counter }}: {{ question.question_text }} (Grade: {{ question.grade }})
                     </div>
-                </form>
-            </li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
-
-<div class="container-fluid">
-    {% if grade > 80 %}
-    <div class="alert alert-success">
-       <!--HINT Display passed info -->
-    </div>
-        {% else %}
-        <div class="alert alert-danger">
-            <!--HINT Display failed info -->
+                    <ul class="list-group list-group-flush">
+                        {% for choice in question.choice_set.all %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center {% if choice.is_correct %}list-group-item-success text-success font-weight-bold{% endif %}">
+                            <span>
+                                {% if choice.is_correct %}
+                                    <span class="mr-2">✓</span>
+                                {% endif %}
+                                {{ choice.choice_text }}
+                            </span>
+                            {% if choice.is_correct %}
+                                <span class="badge badge-success">Correct Answer</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-        <a class="btn btn-link text-danger" href="{% url 'onlinecourse:course_details' course.id %}">Re-test</a>
-        {% endif %}
-        <div class="card-columns-vertical mt-1">
-        <h5 class="">Exam results</h5>
-            <!--HINT Display exam results-->
+
+        <div class="text-center my-5">
+            <a href="{% url 'onlinecourse:index' %}" class="btn btn-primary btn-lg px-5 shadow">Back to Course List</a>
         </div>
     </div>
 </body>
