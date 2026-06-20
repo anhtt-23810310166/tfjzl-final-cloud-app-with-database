@@ -101,8 +101,7 @@ def enroll(request, course_id):
         course.total_enrollment += 1
         course.save()
 
-    return HttpResponseRedirect(reverse(viewname='onlinecourse:course_details', args=(course.id,)))
-
+    return redirect(f'/onlinecourse/{course.id}/')
 
 # Hàm trích xuất danh sách ID đáp án từ form nộp bài
 def extract_answers(request):
