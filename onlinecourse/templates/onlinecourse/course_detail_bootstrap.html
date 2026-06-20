@@ -79,7 +79,7 @@
                     <div class="card-body text-center">
                         <h5 class="card-title font-weight-bold">Course Assessment</h5>
                         <p class="card-text text-muted">Test your knowledge after completing all the lessons listed.</p>
-                        <a href="{% url 'onlinecourse:examine' course.id %}" class="btn btn-success btn-lg btn-block shadow-sm">
+                        <a href="/onlinecourse/{{ course.id }}/submit/" class="btn btn-success btn-lg btn-block shadow-sm">
                             Take Exam / Quiz
                         </a>
                     </div>
