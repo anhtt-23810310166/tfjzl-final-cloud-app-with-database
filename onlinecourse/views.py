@@ -148,7 +148,7 @@ def submit(request, course_id):
         # Chuyển hướng dữ liệu sang view hiển thị kết quả kèm theo thông tin id bài nộp
         return redirect('onlinecourse:show_exam_result', course_id=course.id, submission_id=submission.id)
     
-    return redirect('onlinecourse:course_details', course_id=course_id)
+    return redirect(f'/onlinecourse/{course_id}/')
 
 
 # TRIỂN KHAI HÀM SHOW_EXAM_RESULT (TASK 5)
