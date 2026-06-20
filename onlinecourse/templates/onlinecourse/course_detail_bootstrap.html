@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     {% load static %}
+    <meta charset="UTF-8">
+    <title>{{ course.name }}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <meta charset="UTF-8">
 </head>
-
 <body>
-    <!-- Navigation bar -->
+
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid">
             <div class="navbar-header">
-                  <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
+                <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
             </div>
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
                 <li>
-                    <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
+                    <a class="text-muted" href="#">{{ user.username }}</a>
                     <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
                 </li>
                 {% else %}
@@ -27,10 +26,9 @@
                     <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
                         {% csrf_token %}
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Username" name="psw" >
+                            <input type="text" class="form-control" placeholder="Username" name="username">
+                            <input type="password" class="form-control" placeholder="Password" name="password">
                             <button class="btn btn-primary" type="submit">Login</button>
-                            <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
                         </div>
                     </form>
                 </li>
@@ -39,18 +37,55 @@
         </div>
     </nav>
 
-    <!-- Page content -->
-    <div class="container-fluid">
-            <h2>{{ course.name }}</h2>
-            <div class="card-columns-vertical">
-                {% for lesson in course.lesson_set.all %}
-                    <div class="card mt-1">
-                        <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
-                        <div class="card-body">{{lesson.content}}</div>
+    <div class="container-fluid mt-4">
+        <h2 class="text-primary mb-3">Course: {{ course.name }}</h2>
+
+        <div class="row">
+            <div class="col-md-8_5 col-sm-12">
+                <div class="card mb-4">
+                    <img class="card-img-top" src="{{ course.image.url }}" alt="Course Image" style="max-height: 400px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">Description</h5>
+                        <p class="card-text">{{ course.description }}</p>
                     </div>
-                {% endfor %}
+                </div>
+
+                <h3 class="mb-3 text-secondary">Lessons</h3>
+                <div class="accordion" id="accordionLessons">
+                    {% for lesson in course.lesson_set.all %}
+                        <div class="card">
+                            <div class="card-header" id="heading{{ lesson.id }}">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse{{ lesson.id }}" aria-expanded="true" aria-controls="collapse{{ lesson.id }}">
+                                        Lesson {{ forloop.counter }}: {{ lesson.title }}
+                                    </button>
+                                </h2>
+                            </div>
+
+                            <div id="collapse{{ lesson.id }}" class="collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ lesson.id }}" data-parent="#accordionLessons">
+                                <div class="card-body">
+                                    {{ lesson.content }}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="alert alert-warning">No lessons available for this course yet.</p>
+                    {% endfor %}
+                </div>
             </div>
-            <!-- Course detail template changes go here -->
+
+            <div class="col-md-3_5 col-sm-12 mt-4 mt-md-0">
+                <div class="card border-primary sticky-top" style="top: 20px;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title font-weight-bold">Course Assessment</h5>
+                        <p class="card-text text-muted">Test your knowledge after completing all the lessons listed.</p>
+                        <a href="{% url 'onlinecourse:examine' course.id %}" class="btn btn-success btn-lg btn-block shadow-sm">
+                            Take Exam / Quiz
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
